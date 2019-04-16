@@ -1,0 +1,284 @@
+//2019.04.14
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class data
+{
+    friend class StuRoot;
+private:
+    static int man;//已录入的人数
+    string name;
+    char sex;
+    int num;
+    int class1;
+    int runningscore;
+    int longjumpscore;
+    int Allscore;
+public:
+    void show();
+};
+int data::man = 0;
+
+void data::show()
+{
+    cout<<"name:"<<name<<"\nsex:"<<sex<<"\nnum:"<<num<<"\nclass1:"<<class1<<"\nrunningscore:"<<runningscore<<"\nlongjumpscore:"<<longjumpscore<<"\nAllsore:"<<Allscore<<"\t"<<endl;
+    return;
+}
+
+class StuRoot
+{
+private:
+    data *elem;
+    int length;
+    int listsize;
+public:
+    StuRoot(int size);
+    void Seek();
+    void Add();
+    void All();
+    void Modify();
+
+    void Delete();
+    void Sort();
+};
+
+StuRoot::StuRoot(int size)
+{
+    elem = new data[size];
+    if(!elem)
+    {
+        cout <<"ERROR!";
+        return;
+    }
+    listsize = size;
+    length = 0;
+}
+
+void StuRoot::Seek()
+{
+    int n;
+    cout<<"\nPlease enter the num you want to seek:";
+    cin >> n;
+    if(length == 0)
+    {
+        cout <<"ERROR!";
+        return;
+    }
+    for(int i=0; i<length; ++i)
+    {
+        if(n == elem[i].num)
+        {
+            elem[i].show();
+            return;
+        }
+    }
+    cout <<"查无此人！\n";
+}
+void StuRoot::All()
+{
+    for(int i=0; i<length; i++)
+    {
+        elem[i].Allscore=elem[i].Allscore+elem[i].runningscore+elem[i].longjumpscore;
+        //scout<<elem[i].Allscore;
+    }
+}
+
+void StuRoot::Add()
+{
+    int n;
+    cout << "\nPlease enter the number you want to add:";
+    cin >> n;
+    int m = n+length;
+    for(int i=length; i<m; ++i)
+    {
+        int nu, cl, ru, lo;
+        char se;
+        string na;
+        length++;
+        cout<<"please enter the "<<length<<" name:";
+        cin >> na;
+        elem[i].name = na;
+        cout<<"0-女,1-男"<<endl;
+        cout<<"please enter the "<<length<<" sex:";
+        cin>> se;
+        elem[i].sex = se;
+        cout<<"please enter the "<<length<<" num:";
+        cin>> nu;
+        elem[i].num = nu;
+        cout<<"please enter the"<<length<<" class1:";
+        cin>> cl;
+        elem[i].class1 = cl;
+        cout<<"please enter the "<<length<<" runningscore:";
+        cin>> ru;
+        elem[i].runningscore = ru;
+        cout<<"please enter the"<<length<<" longjumpscore:";
+        cin>> lo;
+        elem[i].longjumpscore = lo;
+    }
+
+}
+
+void StuRoot::Modify()
+{
+    int n;
+    cout<<"\n=====information change====";
+    cout<<"\nPlease enter the student you want to modify:";
+    cin>>n;
+    if(length == 0)
+        cout <<"ERROR!";
+    for(int i=0; i<length; ++i)
+    {
+        if(n == elem[i].num)
+        {
+            int k, m;
+            string n;
+            char s;
+            cout<<"\nPlease enter the information you wan to change:";
+            cout<<"\n1.name\n2.sex\n3.class\n4.runningscore\n5.longjumpscore";
+            cin >> k;
+            switch(k)
+            {
+            case 1:
+                cout << "Please enter the new name:";
+                cin >> n;
+                elem[i].name = n;
+                return;
+            case 2:
+                cout << "Please enter the new sex:";
+                cin >> s;
+                elem[i].sex = s;
+                return;
+            case 3:
+                cout << "Please enter the new class:";
+                cin >> m;
+                elem[i].name = m;
+                return;
+            case 4:
+                cout << "Please enter the new runningscore:";
+                cin >> m;
+                elem[i].name = m;
+                break;
+            case 5:
+                cout << "Please enter the new longjumpscore:";
+                cin >> m;
+                elem[i].name = m;
+                return;
+            }
+        }
+    }
+    cout <<"查无此人！\n";
+}
+
+void StuRoot::Delete()
+{
+    int n;
+    cout<<"\nPlease enter the student you want to delete:";
+    cin >> n;
+    if(length == 0)
+        cout <<"ERROR!";
+    for(int i=0; i<length; ++i)
+    {
+        if(n == elem[i].num)
+        {
+            for(int j=i; j<length-1; ++j)
+            {
+                elem[j] = elem[j+1];
+            }
+            delete &elem[length-1];
+            length--;
+            data::man--;
+            cout <<"DELETE SUCCEED!\n";
+            return;
+        }
+    }
+    cout <<"查无此人！\n";
+}
+void StuRoot::Sort()
+{
+    data temp;
+    int i;
+    for(i=0; i<length-1; i++)
+    {
+        if(elem[i].Allscore>elem[i+1].Allscore)
+        {
+            temp=elem[i];
+            elem[i]=elem[i+1];
+            elem[i+1]=temp;
+        }
+    }
+    for(i=0; i<length; i++)
+    {
+        elem[i].show();
+    }
+}
+
+int main()
+{
+    StuRoot stu(1000);
+    int b;
+    while(1)
+    {
+        cout<<"please enter(0 student,1 teach):";
+        cin>>b;
+        if(b==1)
+        {
+            while(1)
+            {
+                cout<<"1-Seek,2-Add,3-Modify,4-Delete,5-Return,6-Allshow,0-Quit:";
+                cin >> b;
+                if(b==1)
+                {
+                    stu.Seek();
+                }
+                else if(b==2)
+                {
+                    stu.Add();
+                }
+                else if(b==3)
+                {
+                    stu.Modify();
+                }
+                else if(b==4)
+                {
+                    stu.Delete();
+                }
+                else if(b==5)
+                {
+                    break;
+                }
+                else if(b==6)
+                {
+                    stu.All();
+                    stu.Sort();
+                }
+                else if(b==0)
+                {
+                    return 0;
+                }
+            }
+        }
+        else
+        {
+            cout<<"1-seek,2-sort:"<<endl;
+            int d;
+            cin>>d;
+            if(d==1)
+            {
+
+            stu.Seek();
+            }
+            else if(d==2)
+            {
+
+            stu.All();
+            stu.Sort();
+            }
+            else
+            {
+                cout<<"error!"<<endl;
+            }
+        }
+    }
+}
