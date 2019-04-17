@@ -1,0 +1,541 @@
+#include<bits/stdc++.h>
+#include<windows.h>
+#include<time.h>
+
+using namespace std;
+
+char *T[100];
+
+class node
+{
+    friend class man;
+private://陈芷妤部分
+    int id;//商品编号
+    string name;//商品名称
+    int time;//入库时间
+    double num;//数量
+    node *next;
+public:
+    static int amount;//记录存在的数的个数
+    static int Renum;//记录修改的次数
+    node()//陈芷妤部分，录入信息
+    {
+        int i, t;
+        double nu;
+        string na;
+        cout<<"商品入库，请输入相关信息："<<endl;
+        cout<<endl<<"\t商品编号：";
+        cin>>i;
+        cout<<endl<<"\t商品名称：";
+        cin>>na;
+        cout<<endl<<"\t入库时间：";
+        cin>>t;
+        cout<<endl<<"\t数量：";
+        cin>>nu;
+        id = i;
+        name = na;
+        time = t;
+        num = nu;
+        node::amount++;
+        system("cls");
+    }
+    int getId()
+    {
+        return id;
+    }
+    string getName()
+    {
+        return name;
+    }
+    int getTime()
+    {
+        return time;
+    }
+    double getNum()
+    {
+        return num;
+    }
+    void show()//黄俊华部分，显示内容
+    {
+        cout<<"\n01.酒   02.饮料   03.零食\n";
+        cout<<"编号："<<getId()<<"  "<<"货品名称："<<getName()<<"  "<<"入库时间："<<getTime()<<"  "<<"货品数量："<<getNum()<<endl;
+    }
+};
+
+int node::amount = 0;
+int node::Renum = 0;
+
+class man
+{
+private:
+    node *head;
+    node *tail;
+public:
+    man();
+    void showDiff();
+    void add();
+    void del();
+    void redata();
+    void search();
+    void autoSort();
+    void destruct();
+};
+
+man::man()
+{
+    head = NULL;
+    tail = NULL;
+}
+
+void man::showDiff()//黄俊华部分，指定性显示
+{
+    int k;
+    node *t = head;
+    cout << "1.按编号显示记录"<<endl;
+    cout << "2.按入库时间显示记录"<<endl;
+    cout << "3.显示库存为0的货品"<<endl;
+    cout << "4.显示所有记录"<<endl;
+    cout << "5.显示修改记录"<<endl;
+    cin >>k;
+    switch(k)
+    {
+    case 1:
+        if(!t)
+        {
+            cout << "\nNO DATA!\n";
+        }
+        for(int i=1; i<=4; i++)
+        {
+            t = head;
+            while(t)
+            {
+                if(t->id/100 == i)
+                {
+                    t->show();
+                }
+                t = t->next;
+            }
+        }
+        break;
+    case 2:
+        int kara, made;
+        cout << "什么日期之前：";
+        cin >> made;
+        cout << "什么日期之后：";
+        cin >> kara;
+        if(!t)
+        {
+            cout << "\nNO DATA!\n";
+        }
+        while(t)
+        {
+            if(t->time > kara && t->time < made )
+            {
+                t->show();
+            }
+            t = t->next;
+        }
+        break;
+    case 3:
+        int key;
+        if(!t)
+        {
+            cout << "\nNO DATA!\n";
+        }
+        while(t)
+        {
+            key = 0;
+            if(t->num == 0 )
+            {
+                key=1;
+                t->show();
+            }
+            t = t->next;
+        }
+        if(!key)
+        {
+            cout << "\n无库存为0的货物\n";
+        }
+        break;
+    case 4:
+        if(!t)
+        {
+            cout << "\nNO DATA!\n";
+        }
+        while(t)
+        {
+            t->show();
+            t = t->next;
+        }
+        break;
+    case 5:
+        puts(T[0]);
+        if(!node::Renum)
+        {
+            break;
+        }
+        cout << T[0] <<endl;
+        for(int i=0; i<node::Renum; ++i)
+        {
+            cout << T[i] <<endl;
+        }
+        break;
+    }
+}
+
+void man::add()//陈芷妤部分,录入
+{
+    int k;
+    cout << "输入你想增加的个数：";
+    cin >> k;
+    if(k<1)
+    {
+        cout << "个数不可小于一";
+        return;
+    }
+    else
+    {
+        for(int i=0; i<k; i++)
+        {
+            node *p = new node;
+            node *t = head;
+            if(!head)
+            {
+                head = tail = p;
+            }
+            else
+            {
+                tail->next = p;
+                tail = p;
+            }
+            tail->next = NULL;
+        }
+    }
+}
+
+void man::del()//陈荣妹部分，根据id删除
+{
+    char ch;
+    cout << "\n********请输入删除的编号********" << endl;
+    int newnumber;
+    cin >> newnumber;
+    node *p;
+    node *t = head;
+    while(t)
+    {
+        if(t->id==newnumber)
+        {
+            break;
+        }
+        p = t;
+        t = t->next;
+    }
+    if(!t)
+    {
+        cout<<"不存在符合条件的信息！"<<endl;
+        return;
+    }
+    else if(head->id==newnumber)
+    {
+        t->show();
+        cout<<"确认是否进行删除，请输入y/n:";
+        cin>>ch;
+        if(ch=='y'||ch=='Y')
+        {
+            head = head->next;
+            delete t;
+            node::amount--;
+            cout<<"删除成功!"<<endl;
+        }
+        else
+            cout<<"放弃本次删除操作"<<endl;
+    }
+    else
+    {
+        t->show();
+        cout<<"确认是否进行删除，请输入y/n:";
+        cin>>ch;
+        if(ch=='y'||ch=='Y')
+        {
+            p->next = t->next;
+            delete t;
+            node::amount--;
+            cout<<"删除成功!"<<endl;
+        }
+        else
+            cout<<"放弃本次删除操作"<<endl;
+    }
+}
+
+void man::redata()//黄晖钟部分，修改
+{
+    node *t = head;
+    time_t Retime;//记录修改时间
+    char tmp[1000];// 存变形后的时间
+    int m, i, k, ti, error=3;
+    double nu;
+    string na;//宋福迪部分，管理员权限
+    int sele;
+    cout << "     请输入六位管理员密码    " << endl;
+    cout << "                            " << endl;
+    cout << "1.输入密码          2.不是管理员" <<endl;
+    cin >> sele;
+    switch(sele)
+    {
+    case 1:
+        int password;
+        cout << "密码：";
+        cin >> password;
+        while(1)
+        {
+            if(password == 123456)
+            {
+                cout << "\n管理员你好！请输入你想修改的数据的编号:";
+                cin >> m;
+                while(t)
+                {
+                    if(t->id == m)
+                    {
+                        break;
+                    }
+                    t = t->next;
+                }
+                if(!t)
+                {
+                    cout << "找不到该编号！\n";
+                    return;
+                }
+                cout << "\n1.修改编号   2.修改名称   3.修改入库时间   4.修改数量   5.修改全部"<< endl;
+                cout << "请输入你的选择：";
+                cin >> k;
+                switch(k)
+                {
+                case 1:
+                    cout << "目前存在的编号：";
+                    while(t)
+                    {
+                        cout << t->id << "  ";
+                        t = t->next;
+                    }
+                    t = head;
+                    cout <<"原商品编号为：" << t->id;
+                    cout << "\n输入新商品编号：";
+                    cin>>i;
+                    t->id = i;
+                    Retime = time(0);
+                    strftime( tmp, sizeof(tmp), "编号于%Y/%m/%d %X %A 被修改 ",localtime(&Retime) );
+                    T[node::Renum] = tmp;
+                    node::Renum++;
+                    cout <<"修改成功！";
+                    return;
+                case 2:
+                    cout <<"原商品名称为：" << t->name;
+                    cout << "\n输入新商品名称：";
+                    cin>>na;
+                    t->name = na;
+                    Retime = time(0);
+                    strftime( tmp, sizeof(tmp), "名称于%Y/%m/%d %X %A 被修改 ",localtime(&Retime) );
+                    T[node::Renum] = tmp;
+                    cout << T[0];
+                    node::Renum++;
+                    cout <<"修改成功！";
+                    return;
+                case 3:
+                    cout <<"原商品入库时间为：" << t->time;
+                    cout<<"\n输入新入库时间：";
+                    cin>>ti;
+                    t->time = ti;
+                    Retime = time(0);
+                    strftime( tmp, sizeof(tmp), "时间于%Y/%m/%d %X %A 被修改 ",localtime(&Retime) );
+                    T[node::Renum] = tmp;
+                    node::Renum++;
+                    cout <<"修改成功！";
+                    return;
+                case 4:
+                    cout <<"原商品数量为：" << t->num;
+                    cout<<"\n输入新数量：";
+                    cin>>nu;
+                    t->num = nu;
+                    Retime = time(0);
+                    strftime( tmp, sizeof(tmp), "数量于%Y/%m/%d %X %A 被修改 ",localtime(&Retime) );
+                    T[node::Renum] = tmp;
+                    node::Renum++;
+                    cout <<"修改成功！";
+                    return;
+                case 5:
+                    cout <<"原商品编号为：" << t->id;
+                    cout <<"原商品名称为：" << t->name;
+                    cout <<"原商品入库时间为：" << t->time;
+                    cout <<"原商品数量为：" << t->num;
+                    cout << "\n输入新商品编号：";
+                    cin>>i;
+                    t->id = i;
+                    cout << "\n输入新商品名称：";
+                    cin>>na;
+                    t->name = na;
+                    cout<<"\n输入新入库时间：";
+                    cin>>ti;
+                    t->time = ti;
+                    cout<<"\n输入新数量：";
+                    cin>>nu;
+                    t->num = nu;
+                    Retime = time(0);
+                    strftime( tmp, sizeof(tmp), "数据于%Y/%m/%d %X %A 被修改 ",localtime(&Retime) );
+                    T[node::Renum] = tmp;
+                    node::Renum++;
+                    cout <<"修改成功！";
+                    return;
+                }
+            }
+            else
+            {
+                int i = 100;
+                if(error==0)
+                {
+                    error = 3;
+                    while(i)
+                    {
+                        system("cls");
+                        cout <<"密码错误次数过多，请等待："<< i <<"s";
+                        Sleep(10000);
+                        i--;
+                    }
+                    system("cls");
+                    break;
+                }
+                cout <<"(还剩"<<error<< "输入机会)" << "密码错误，请重新输入：";
+                error--;
+            }
+            cin >> password;
+        }
+        break;
+    case 2:
+        cout << "\n不是管理员？那就没你什么事了\n";
+        break;
+    }
+}
+
+void man::search()//何永佳的部分，分类查询
+{
+    int m;
+    node *t = head;
+    int type;
+    cout<<"*****************************"<<endl;
+    cout << "\n请输入编号:";
+    cout<<"1.按编码查询    2.按种类查询   3.返回  "  <<endl;
+    cout<<"*****************************" <<endl;
+    cin >> type;
+    switch(type)
+    {
+    case 1:
+        cout << "目前存在的编号：";//显示已有的编号
+        while(t)
+        {
+            cout << t->id << "  ";
+            t = t->next;
+        }
+        t = head;
+        cout <<"\n请输入你要查询的编号：";
+        cin >> m;
+        while(t)
+        {
+            if(t->id == m)
+            {
+                break;
+            }
+            t = t->next;
+        }
+        if(!t)
+        {
+            cout<<"输入错误编码/该产品不存在"<<endl;
+            return;
+        }
+        t->show();
+        break;
+    case 2:
+        cout <<"请输入你要查询的种类：";
+        cin >> m;
+        while(t)
+        {
+            if(t->id/100 == m)
+            {
+                break;
+            }
+            t = t->next;
+        }
+        if(!t)
+        {
+            cout<<"输入错误编码/该产品不存在"<<endl;
+            return;
+        }
+        t->show();
+        break;
+    }
+}
+
+void man::destruct()
+{
+    node *p;
+    while(head)
+    {
+        p = head;
+        head = head->next;
+        delete p;
+    }
+    cout << "\nDESTRUCR SUCCEED!\n";
+}
+
+void Menu()
+{
+    cout << "                        " <<endl;
+    cout << "========================" <<endl;
+    cout << "      1.入库            " <<endl;
+    cout << "      2.出货            " <<endl;
+    cout << "      3.显示            " <<endl;
+    cout << "      4.改数            " <<endl;
+    cout << "      5.查询            " <<endl;
+    cout << "      6.销毁            " <<endl;
+    cout << "      其它键退出        " <<endl;
+    cout << "========================" <<endl;
+    cout << "   输入你的选择:";
+}
+
+int main(void)
+{
+    man Man = man();
+    int k;
+    while(1)
+    {
+        Menu();
+        cin >> k;
+        switch(k)
+        {
+        case 1:
+            system("cls");
+            Man.add();
+            break;
+        case 2:
+            system("cls");
+            Man.del();
+            break;
+        case 3:
+            system("cls");
+            Man.showDiff();
+            break;
+        case 4:
+            system("cls");
+            Man.redata();
+            break;
+        case 5:
+            system("cls");
+            Man.search();
+            break;
+        case 6:
+            system("cls");
+            Man.destruct();
+            return 0;
+        default:
+            return 0;
+        }
+    }
+}
